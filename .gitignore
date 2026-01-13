@@ -9,6 +9,14 @@ env/
 ENV/
 .venv
 
+# Visual Studio
+*.pyproj
+*.slnx
+*.sln
+*.suo
+*.user
+.vs/
+
 # Environment
 .env
 .env.local
