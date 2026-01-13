@@ -1,20 +1,22 @@
-# Compatible versions for Pydantic 1.10.13
-fastapi==0.95.2
-uvicorn[standard]==0.22.0
-pydantic==1.10.13
+# Core Framework - Updated for Python 3.13+ compatibility
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+websockets==14.1
+python-multipart==0.0.20
 
-# Rest of packages
-python-dotenv==1.0.0
-python-multipart==0.0.6
-websockets==11.0.2
+# Twilio
+twilio>=9.0.0
 
-# APIs
-twilio>=8.10.0
-openai>=1.3.0
+# AI Services
+google-genai>=0.3.0
+
+# Google Maps
 googlemaps>=4.10.0
 
-# Audio
-pydub>=0.25.1
+# Configuration - Pydantic v2
+python-dotenv>=1.0.0
+pydantic==2.10.6
+pydantic-settings==2.7.1
 
-# HTTP
-aiohttp>=3.9.1
+# HTTP Client
+aiohttp>=3.11.0
