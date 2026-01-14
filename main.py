@@ -87,6 +87,7 @@ async def process_speech(request: Request):
     
     # Get session
     session = call_sessions[call_sid]
+    session['call_sid'] = call_sid
     
     # Add to conversation history
     session['messages'].append({
@@ -144,9 +145,12 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
             query = function_args.get('query')
             location = function_args.get('location')
             
+            # Validate inputs
+            if not query or not location or query == 'None' or location == 'None':
+                return "I need both what you're looking for and a location. Could you try again?"
+            
             # Store location in session
-            if location:
-                session['location'] = location
+            session['location'] = location
             
             # Search places
             places = maps_service.search_places(query, location)
@@ -155,35 +159,39 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
                 return f"I couldn't find any {query} near {location}. Could you try a different search?"
             
             # Format result
+            session_id = session.get('call_sid', 'default')
             result_text = await llm_service.format_function_result(
                 function_name,
                 {'places': places, 'count': len(places)},
-                session_id=call_sid
+                session_id=session_id
             )
             
-            # Optionally send SMS with details
+            # Send SMS with details if multiple results
             if len(places) > 1:
-                sms_text = sms_service.format_places_sms(places)
-                sms_service.send_sms(session['caller'], sms_text)
-                result_text += " I've also sent the details to your phone via text message."
+                try:
+                    sms_text = sms_service.format_places_sms(places)
+                    sms_service.send_sms(session['caller'], sms_text)
+                    result_text += " I've also sent the details to your phone."
+                except Exception as e:
+                    logger.error(f"SMS error: {e}")
             
             return result_text
             
         elif function_name == 'send_sms':
             message = function_args.get('message')
-            success = sms_service.send_sms(session['caller'], message)
-            
-            if success:
-                return "I've sent the information to your phone."
-            else:
-                return "I had trouble sending the text message."
+            if message:
+                success = sms_service.send_sms(session['caller'], message)
+                return "I've sent the information to your phone." if success else "I had trouble sending the text."
+            return "I need a message to send."
         
         else:
             return "I'm not sure how to help with that."
             
     except Exception as e:
         logger.error(f"Error executing function: {e}")
-        return "I encountered an issue while processing that request."
+        import traceback
+        traceback.print_exc()
+        return "I encountered an issue. Please try again."
 
 async def respond_and_hangup(message: str) -> Response:
     """Create a TwiML response that says something and hangs up"""

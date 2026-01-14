@@ -49,7 +49,7 @@ Call2Map/
 - Twilio account
 - OpenAI API key
 - Google Maps API key
-# 🎙️ Call2Live - AI Voice Assistant via Phone Call
+# 🎙️ Call2Map - AI Voice Assistant via Phone Call
 
 Call a phone number, get instant AI-powered place recommendations and information through natural conversation. No app required!
 
@@ -86,7 +86,7 @@ User's Phone → Twilio → FastAPI Backend → Google Gemini AI
 
 1. **Clone and setup**
 ```bash
-cd call2live_complete
+cd call2Map
 python -m venv venv
 
 # Windows
@@ -190,7 +190,7 @@ REDIS_URL=redis://localhost:6379
 ## 📂 Project Structure
 
 ```
-call2live_complete/
+call2Map/
 ├── main.py                 # FastAPI application
 ├── config.py               # Configuration management
 ├── requirements.txt        # Python dependencies

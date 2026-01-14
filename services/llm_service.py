@@ -1,69 +1,29 @@
-# services/llm_service.py
-from google import genai
-from google.genai import types
+# services/llm_service.py - WORKING VERSION
+import google.generativeai as genai
 import json
 import logging
 from typing import List, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_INSTRUCTION = """You are a helpful AI assistant that helps people find places and get information through phone calls.
+SYSTEM_PROMPT = """You are a helpful AI assistant that helps people find places through phone calls.
 
-You have access to Google Maps to search for nearby locations. When users ask about places, restaurants, services, etc., use the search_places function.
+When users ask about places, extract the query and location, then respond in JSON format:
+{"action": "search", "query": "what they want", "location": "where"}
 
-Guidelines:
-- Be concise and natural (this is a phone call, keep responses under 50 words)
-- Always confirm the user's location before searching
-- Provide only the top 2-3 results to avoid overwhelming the user
-- Offer to send details via SMS if there are multiple results
-- Be friendly and conversational
-- If you don't have the user's location, ask for it politely"""
+Examples:
+- "Find sushi in New York" → {"action": "search", "query": "sushi restaurants", "location": "New York"}
+- "Gas stations in Chicago" → {"action": "search", "query": "gas stations", "location": "Chicago"}
 
-# Define function declarations
-TOOLS = [
-    types.Tool(
-        function_declarations=[
-            types.FunctionDeclaration(
-                name="search_places",
-                description="Search for places near a location using Google Maps",
-                parameters=types.Schema(
-                    type=types.Type.OBJECT,
-                    properties={
-                        "query": types.Schema(
-                            type=types.Type.STRING,
-                            description="What to search for (e.g., 'sushi restaurants', 'gas stations')"
-                        ),
-                        "location": types.Schema(
-                            type=types.Type.STRING,
-                            description="City, address, or zip code to search near"
-                        )
-                    },
-                    required=["query", "location"]
-                )
-            ),
-            types.FunctionDeclaration(
-                name="send_sms",
-                description="Send details via SMS to the caller's phone",
-                parameters=types.Schema(
-                    type=types.Type.OBJECT,
-                    properties={
-                        "message": types.Schema(
-                            type=types.Type.STRING,
-                            description="The message content to send"
-                        )
-                    },
-                    required=["message"]
-                )
-            )
-        ]
-    )
-]
+Be concise - this is a phone call."""
 
 class LLMService:
     def __init__(self, api_key: str):
-        self.client = genai.Client(api_key=api_key)
-        self.model_id = "gemini-2.0-flash-exp"
-        self.chats = {}
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel(
+            model_name='models/gemini-2.5-flash',  # ← Updated model name
+            system_instruction=SYSTEM_PROMPT
+        )
     
     async def process_message(
         self,
@@ -72,63 +32,44 @@ class LLMService:
         user_location: Optional[str] = None,
         session_id: str = "default"
     ) -> Dict:
-        """Process user message with function calling"""
+        """Process user message"""
         
         try:
-            # Add location context if available
-            message = user_message
-            if user_location:
-                message = f"[User's location: {user_location}]\n{user_message}"
-            
-            # Build conversation history for Gemini
-            contents = []
-            for msg in conversation_history[-10:]:  # Last 10 messages
-                role = "user" if msg["role"] == "user" else "model"
-                contents.append(types.Content(
-                    role=role,
-                    parts=[types.Part(text=msg["content"])]
-                ))
-            
-            # Add current message
-            contents.append(types.Content(
-                role="user",
-                parts=[types.Part(text=message)]
-            ))
-            
             # Generate response
-            response = self.client.models.generate_content(
-                model=self.model_id,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_INSTRUCTION,
-                    tools=TOOLS,
-                    temperature=0.7,
-                    max_output_tokens=150
-                )
-            )
+            response = self.model.generate_content(user_message)
+            text = response.text.strip()
             
-            # Check for function calls
-            if response.candidates[0].content.parts[0].function_call:
-                func_call = response.candidates[0].content.parts[0].function_call
+            logger.info(f"Gemini response: {text}")
+            
+            # Try to parse as JSON for function call
+            if '{' in text and '}' in text:
+                # Extract JSON from response
+                start = text.find('{')
+                end = text.rfind('}') + 1
+                json_str = text[start:end]
                 
-                return {
-                    "type": "function_call",
-                    "function_name": func_call.name,
-                    "function_args": dict(func_call.args),
-                    "response": response
-                }
-            else:
-                # Regular text response
-                return {
-                    "type": "text",
-                    "content": response.text
-                }
+                try:
+                    data = json.loads(json_str)
+                    if data.get('action') == 'search':
+                        return {
+                            "type": "function_call",
+                            "function_name": "search_places",
+                            "function_args": {
+                                "query": data.get('query', ''),
+                                "location": data.get('location', '')
+                            }
+                        }
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON parse error: {e}")
+            
+            # Fallback: direct text response
+            return {"type": "text", "content": text}
                 
         except Exception as e:
-            logger.error(f"Gemini API error: {e}")
+            logger.error(f"Gemini error: {e}")
             return {
                 "type": "text",
-                "content": "I apologize, I'm having trouble right now. Could you try again?"
+                "content": "I'm having trouble. Please try again."
             }
     
     async def format_function_result(
@@ -137,55 +78,32 @@ class LLMService:
         function_result: Dict,
         session_id: str = "default"
     ) -> str:
-        """Format function results into natural language"""
+        """Format results"""
+        if function_name == "search_places" and "places" in function_result:
+            places = function_result["places"]
+            
+            if not places:
+                return "I couldn't find any places matching that search."
+            
+            if len(places) == 1:
+                place = places[0]
+                msg = f"I found {place['name']}"
+                if place.get('address'):
+                    msg += f" at {place['address']}"
+                if place.get('rating'):
+                    msg += f", rated {place['rating']} stars"
+                return msg + "."
+            
+            # Multiple results
+            place = places[0]
+            msg = f"I found {len(places)} places. The top rated is {place['name']}"
+            if place.get('rating'):
+                msg += f" with {place['rating']} stars"
+            msg += ". Would you like me to text you the full list?"
+            return msg
         
-        try:
-            # Create function response
-            function_response = types.FunctionResponse(
-                name=function_name,
-                response=function_result
-            )
-            
-            # Get natural language description
-            response = self.client.models.generate_content(
-                model=self.model_id,
-                contents=[
-                    types.Content(
-                        role="user",
-                        parts=[types.Part(text="Describe the search results naturally")]
-                    ),
-                    types.Content(
-                        role="model",
-                        parts=[types.Part(function_call=types.FunctionCall(
-                            name=function_name,
-                            args={}
-                        ))]
-                    ),
-                    types.Content(
-                        role="user",
-                        parts=[types.Part(function_response=function_response)]
-                    )
-                ],
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_INSTRUCTION,
-                    temperature=0.7,
-                    max_output_tokens=150
-                )
-            )
-            
-            return response.text
-            
-        except Exception as e:
-            logger.error(f"Error formatting result: {e}")
-            # Fallback: format manually
-            if function_name == "search_places" and "places" in function_result:
-                places = function_result["places"]
-                if places:
-                    top = places[0]
-                    return f"I found {len(places)} results. The top option is {top['name']}, rated {top.get('rating', 'N/A')} stars."
-            return "I found some results for you."
+        return "Here are the results I found."
     
     def clear_chat(self, session_id: str):
-        """Clear chat history for a session"""
-        if session_id in self.chats:
-            del self.chats[session_id]
+        """Clear chat history"""
+        pass
