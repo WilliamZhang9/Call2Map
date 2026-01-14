@@ -1,12 +1,12 @@
 # ⚡ Quick Start Guide
 
-Get Call2Live running in 10 minutes!
+Get Call2Map running in 10 minutes!
 
 ## Step 1: Install Dependencies (2 min)
 
 ```bash
 # Navigate to project
-cd call2live_complete
+cd call2map_complete
 
 # Create virtual environment
 python -m venv venv
@@ -70,7 +70,7 @@ python main.py
 
 You should see:
 ```
-🚀 Starting Call2Live Server
+🚀 Starting Call2Map Server
 📞 Phone Number: +15551234567
 ```
 

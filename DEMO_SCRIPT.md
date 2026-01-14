@@ -1,4 +1,4 @@
-# 🎬 Demo Script for Call2Live
+# 🎬 Demo Script for Call2Map
 
 ## Pre-Demo Checklist
 
@@ -25,7 +25,7 @@
 
 ### Opening (30 seconds)
 **Say to audience:**
-> "Call2Live is an AI voice assistant accessible via phone call. No app installation, no screen required - just dial a number and talk. Let me show you."
+> "Call2Map is an AI voice assistant accessible via phone call. No app installation, no screen required - just dial a number and talk. Let me show you."
 
 **Action:**
 - Display phone number on screen
@@ -35,7 +35,7 @@
 
 **Call connects, AI greets**
 
-**You say:** 
+**You say:**
 > "Find me sushi restaurants in Palo Alto"
 
 **Expected AI response:**
@@ -80,7 +80,7 @@
 **Hang up the call**
 
 **Say to audience:**
-> "That's Call2Live - AI-powered location intelligence accessible from any phone. It uses Twilio for telephony, GPT-4 for conversation, and Google Maps for real-time data. Perfect for hands-free navigation, elderly users, or anyone without a smartphone."
+> "That's Call2Map - AI-powered location intelligence accessible from any phone. It uses Twilio for telephony, GPT-4 for conversation, and Google Maps for real-time data. Perfect for hands-free navigation, elderly users, or anyone without a smartphone."
 
 ## 🎯 Key Points to Emphasize
 
