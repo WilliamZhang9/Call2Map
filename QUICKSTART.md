@@ -1,4 +1,4 @@
-# ⚡ Quick Start Guide
+#  Quick Start Guide
 
 Get Call2Map running in 10 minutes!
 
@@ -70,8 +70,8 @@ python main.py
 
 You should see:
 ```
-🚀 Starting Call2Map Server
-📞 Phone Number: +15551234567
+ Starting Call2Map Server
+ Phone Number: +15551234567
 ```
 
 ## Step 5: Start ngrok (30 sec)
@@ -108,7 +108,7 @@ Try saying:
 - "Where's the nearest gas station?"
 - "I'm looking for Italian restaurants"
 
-## 🎉 Success Checklist
+##  Success Checklist
 
 - [ ] Server running without errors
 - [ ] ngrok showing forwarding URL
@@ -116,7 +116,7 @@ Try saying:
 - [ ] Twilio webhook configured
 - [ ] Test call connects and AI responds
 
-## 🆘 Common Issues
+##  Common Issues
 
 **Issue: "Module not found"**
 ```bash
@@ -141,15 +141,15 @@ PORT=8001
 # Update ngrok: ngrok http 8001
 ```
 
-## 📞 What to Say
+##  What to Say
 
 Good test phrases:
-- ✅ "Find sushi restaurants near downtown Seattle"
-- ✅ "I need a gas station"
-- ✅ "Where can I get coffee in San Francisco?"
-- ✅ "Search for pharmacies near me" (AI will ask for location)
+-  "Find sushi restaurants near downtown Seattle"
+-  "I need a gas station"
+-  "Where can I get coffee in San Francisco?"
+-  "Search for pharmacies near me" (AI will ask for location)
 
-## 🎯 Next Steps
+##  Next Steps
 
 Once working:
 1. Try different searches
@@ -160,4 +160,4 @@ Once working:
 
 ---
 
-**You're ready! Pick up your phone and call! 🚀**
+**You're ready! Pick up your phone and call! **

@@ -88,7 +88,7 @@ async def process_speech(request: Request):
     # Get session
     session = call_sessions[call_sid]
     session['call_sid'] = call_sid
-    
+
     # Add to conversation history
     session['messages'].append({
         "role": "user",
@@ -144,14 +144,14 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
         if function_name == 'search_places':
             query = function_args.get('query')
             location = function_args.get('location')
-            
+
             # Validate inputs
             if not query or not location or query == 'None' or location == 'None':
                 return "I need both what you're looking for and a location. Could you try again?"
-            
+
             # Store location in session
             session['location'] = location
-            
+
             # Search places
             places = maps_service.search_places(query, location)
 
@@ -165,7 +165,7 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
                 {'places': places, 'count': len(places)},
                 session_id=session_id
             )
-            
+
             # Send SMS with details if multiple results
             if len(places) > 1:
                 try:
@@ -174,8 +174,77 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
                     result_text += " I've also sent the details to your phone."
                 except Exception as e:
                     logger.error(f"SMS error: {e}")
-            
+
             return result_text
+
+        elif function_name == 'get_reservation_info':
+            place_name = function_args.get('place_name')
+            location = function_args.get('location') or session.get('location')
+
+            if not place_name or not location:
+                return "Which restaurant would you like to book at?"
+
+            # First search for the place
+            places = maps_service.search_places(place_name, location)
+
+            if not places:
+                return f"I couldn't find {place_name} near {location}."
+
+            # Get reservation info for the top result
+            place = places[0]
+            place_id = place.get('place_id')
+
+            if not place_id:
+                return "I found the restaurant but couldn't get booking details."
+
+            res_info = maps_service.get_reservation_info(place_id)
+
+            # Build response
+            response = f"For {place['name']}, "
+
+            if res_info.get('booking_url'):
+                platform = res_info.get('platform', 'their website')
+                response += f"you can book online through {platform}. "
+                # Send SMS with booking link
+                try:
+                    sms_text = f"Book a table at {place['name']}:\n\n"
+                    sms_text += f"📱 {res_info['booking_url']}\n\n"
+                    if place.get('phone'):
+                        sms_text += f"Or call: {place['phone']}\n\n"
+                    sms_text += f"View on map: {res_info.get('maps_url', '')}"
+                    sms_service.send_sms(session['caller'], sms_text)
+                    response += "I've texted you the booking link."
+                except Exception as e:
+                    logger.error(f"SMS error: {e}")
+            elif res_info.get('phone'):
+                response += f"please call them at {res_info['phone']} to make a reservation. "
+                # Send SMS with phone number
+                try:
+                    sms_text = f"Call {place['name']} to reserve:\n\n"
+                    sms_text += f"📞 {res_info['phone']}\n\n"
+                    if place.get('address'):
+                        sms_text += f"📍 {place['address']}\n\n"
+                    sms_text += f"View on map: {res_info.get('maps_url', '')}"
+                    sms_service.send_sms(session['caller'], sms_text)
+                    response += "I've texted you their phone number."
+                except Exception as e:
+                    logger.error(f"SMS error: {e}")
+            else:
+                response += "I don't have booking information, but "
+                if place.get('website'):
+                    response += f"you can check their website. I'll text you the details."
+                    try:
+                        sms_text = f"{place['name']}:\n\n"
+                        sms_text += f"🌐 {place['website']}\n\n"
+                        if place.get('phone'):
+                            sms_text += f"📞 {place['phone']}"
+                        sms_service.send_sms(session['caller'], sms_text)
+                    except Exception as e:
+                        logger.error(f"SMS error: {e}")
+                else:
+                    response += "I couldn't find booking information for this restaurant."
+
+            return response
 
         elif function_name == 'send_sms':
             message = function_args.get('message')
@@ -183,7 +252,7 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
                 success = sms_service.send_sms(session['caller'], message)
                 return "I've sent the information to your phone." if success else "I had trouble sending the text."
             return "I need a message to send."
-        
+
         else:
             return "I'm not sure how to help with that."
 
