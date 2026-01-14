@@ -1,4 +1,4 @@
-# Core Framework - Updated for Python 3.13+ compatibility
+# FastAPI
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
 websockets==14.1
@@ -7,16 +7,16 @@ python-multipart==0.0.20
 # Twilio
 twilio>=9.0.0
 
-# AI Services
-google-genai>=0.3.0
+# Google AI (use older stable version)
+google-generativeai==0.8.3
 
 # Google Maps
 googlemaps>=4.10.0
 
-# Configuration - Pydantic v2
+# Configuration
 python-dotenv>=1.0.0
-pydantic==2.10.6
-pydantic-settings==2.7.1
+pydantic==2.9.2
+pydantic-settings==2.6.1
 
-# HTTP Client
+# HTTP
 aiohttp>=3.11.0

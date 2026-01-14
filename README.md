@@ -87,7 +87,9 @@ User's Phone → Twilio → FastAPI Backend → Google Gemini AI
 1. **Clone and setup**
 ```bash
 cd call2Map
-python -m venv venv
+
+#Create with Python 3.13
+python -3.13 -m venv venv
 
 # Windows
 venv\Scripts\activate
