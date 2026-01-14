@@ -1,4 +1,4 @@
-# 🔧 Troubleshooting Guide
+#  Troubleshooting Guide
 
 ## Common Issues and Solutions
 
@@ -150,9 +150,9 @@ https://abc123.ngrok.io/voice/incoming
 
 **Not:**
 ```
-http://abc123.ngrok.io/voice/incoming  ❌ (http not https)
-https://abc123.ngrok.io                ❌ (missing endpoint)
-https://abc123.ngrok.io/voice          ❌ (wrong endpoint)
+http://abc123.ngrok.io/voice/incoming   (http not https)
+https://abc123.ngrok.io                 (missing endpoint)
+https://abc123.ngrok.io/voice           (wrong endpoint)
 ```
 
 #### Call connects but no speech recognition
@@ -166,7 +166,7 @@ https://abc123.ngrok.io/voice          ❌ (wrong endpoint)
 
 #### "Invalid phone number" errors
 **Check:**
-- Number includes country code: `+15551234567` ✅
+- Number includes country code: `+15551234567` 
 - Number doesn't have spaces or dashes
 - Number doesn't start with just `1` (needs `+1`)
 
@@ -304,17 +304,17 @@ try:
         model="gemini-2.0-flash-exp",
         contents="Say hello"
     )
-    print("✅ Gemini working:", response.text)
+    print(" Gemini working:", response.text)
 except Exception as e:
-    print("❌ Gemini error:", e)
+    print(" Gemini error:", e)
 
 # Test Google Maps
 try:
     gmaps = googlemaps.Client(key=settings.google_maps_api_key)
     result = gmaps.geocode("San Francisco")
-    print("✅ Google Maps working:", result[0]['formatted_address'])
+    print(" Google Maps working:", result[0]['formatted_address'])
 except Exception as e:
-    print("❌ Google Maps error:", e)
+    print(" Google Maps error:", e)
 ```
 
 ---
@@ -355,4 +355,4 @@ Include:
 
 ---
 
-**Most issues are configuration-related. Double-check your .env file!** 🔍
+**Most issues are configuration-related. Double-check your .env file!** 

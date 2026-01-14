@@ -1,4 +1,4 @@
-# 🎬 Demo Script for Call2Map
+#  Demo Script for Call2Map
 
 ## Pre-Demo Checklist
 
@@ -21,7 +21,7 @@
 - [ ] Presentation slides (if any)
 - [ ] Backup video recording (in case live demo fails)
 
-## 📱 Demo Flow (3-5 minutes)
+##  Demo Flow (3-5 minutes)
 
 ### Opening (30 seconds)
 **Say to audience:**
@@ -82,7 +82,7 @@
 **Say to audience:**
 > "That's Call2Map - AI-powered location intelligence accessible from any phone. It uses Twilio for telephony, GPT-4 for conversation, and Google Maps for real-time data. Perfect for hands-free navigation, elderly users, or anyone without a smartphone."
 
-## 🎯 Key Points to Emphasize
+##  Key Points to Emphasize
 
 1. **Accessibility**: Works on any phone, no app needed
 2. **Conversational**: Natural language, context-aware
@@ -90,7 +90,7 @@
 4. **Multi-modal**: Voice + SMS for best experience
 5. **Fast**: Sub-3 second response times
 
-## 📊 Architecture Slide (if presenting)
+##  Architecture Slide (if presenting)
 
 Show diagram:
 ```
@@ -101,7 +101,7 @@ Phone → Twilio → FastAPI Backend → OpenAI GPT-4
                               SMS Response
 ```
 
-## 💡 Use Cases to Mention
+##  Use Cases to Mention
 
 1. **Elderly users** without smartphones
 2. **Driving scenarios** (hands-free)
@@ -109,7 +109,7 @@ Phone → Twilio → FastAPI Backend → OpenAI GPT-4
 4. **Emergency situations** (dead phone battery)
 5. **Quick lookups** without opening apps
 
-## 🆘 Backup Plan (If Live Demo Fails)
+##  Backup Plan (If Live Demo Fails)
 
 ### Plan A: Use pre-recorded video
 - Have a 2-minute video of successful demo
@@ -126,7 +126,7 @@ Phone → Twilio → FastAPI Backend → OpenAI GPT-4
 - Show mock flow diagrams
 - Discuss technical challenges solved
 
-## 📝 Q&A Preparation
+##  Q&A Preparation
 
 ### Expected Questions:
 
@@ -154,7 +154,7 @@ A: Yes! Twilio supports 100+ countries. Just need to buy a local number and conf
 **Q: How much does it cost to run?**
 A: Development: ~$5. Production (1000 calls): ~$110/month. Breakdown in README.
 
-## 🎬 Timing
+##  Timing
 
 - Setup: 30 seconds
 - Demo 1 (Restaurant): 90 seconds
@@ -164,7 +164,7 @@ A: Development: ~$5. Production (1000 calls): ~$110/month. Breakdown in README.
 - **Total: 4 minutes**
 - Leave 1 minute buffer for technical issues
 
-## ✅ Success Metrics
+##  Success Metrics
 
 Demo is successful if:
 - [ ] Call connects immediately
@@ -174,7 +174,7 @@ Demo is successful if:
 - [ ] No errors in server logs
 - [ ] Audience engagement (questions, interest)
 
-## 🎤 Speaking Tips
+##  Speaking Tips
 
 1. **Speak clearly** into the phone (AI is listening!)
 2. **Pause** after AI asks questions
@@ -182,7 +182,7 @@ Demo is successful if:
 4. **Handle errors gracefully** - "Let me try that again"
 5. **Engage audience** - "Notice how it understood..."
 
-## 📞 Emergency Contact
+##  Emergency Contact
 
 If demo fails completely:
 1. Stay calm
@@ -193,6 +193,6 @@ If demo fails completely:
 
 ---
 
-**Practice this flow 2-3 times before presenting!** 🚀
+**Practice this flow 2-3 times before presenting!** 
 
-Good luck! You've built something awesome! 🎉
+Good luck! You've built something awesome! 
