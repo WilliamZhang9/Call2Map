@@ -1,6 +1,6 @@
 # main.py
 """
-Call2Live - AI Voice Assistant via Phone Call
+Call2Map - AI Voice Assistant via Phone Call
 Simplified architecture using Twilio's built-in speech recognition
 """
 from fastapi import FastAPI, Request, Form  # ← Make sure this line is here
@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
-app = FastAPI(title="Call2Live")
+app = FastAPI(title="Call2Map")
 
 # Initialize services
 # llm_service = LLMService(settings.openai_api_key)
@@ -35,7 +35,7 @@ call_sessions: Dict[str, dict] = {}
 @app.get("/")
 async def root():
     return {
-        "status": "Call2Live is running! 🎉",
+        "status": "Call2Map is running! 🎉",
         "phone": settings.twilio_phone_number,
         "active_calls": len(call_sessions),
         "message": "Call this number to talk to the AI assistant!"
@@ -51,16 +51,16 @@ async def handle_incoming_call(request: Request):
     form_data = await request.form()
     caller_number = form_data.get('From')
     call_sid = form_data.get('CallSid')
-    
+
     logger.info(f"📞 Incoming call from {caller_number}, SID: {call_sid}")
-    
+
     # Initialize session
     call_sessions[call_sid] = {
         "caller": caller_number,
         "messages": [],
         "location": None
     }
-    
+
     # TwiML with speech recognition
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -70,7 +70,7 @@ async def handle_incoming_call(request: Request):
     </Gather>
     <Say voice="Polly.Joanna">I didn't hear anything. Please call back if you need assistance. Goodbye!</Say>
 </Response>"""
-    
+
     return Response(content=twiml, media_type="application/xml")
 
 @app.post("/voice/process-speech")
@@ -79,21 +79,21 @@ async def process_speech(request: Request):
     form_data = await request.form()
     speech_result = form_data.get('SpeechResult', '')
     call_sid = form_data.get('CallSid')
-    
+
     logger.info(f"🗣️  User said: {speech_result}")
-    
+
     if not speech_result or call_sid not in call_sessions:
         return await respond_and_hangup("I didn't catch that. Please try again.")
-    
+
     # Get session
     session = call_sessions[call_sid]
-    
+
     # Add to conversation history
     session['messages'].append({
         "role": "user",
         "content": speech_result
     })
-    
+
     try:
         # Process with LLM
         response = await llm_service.process_message(
@@ -102,20 +102,20 @@ async def process_speech(request: Request):
             session.get('location'),
             session_id=call_sid
         )
-        
+
         if response['type'] == 'function_call':
             # Handle function call
             result_text = await handle_function_call(response, session)
         else:
             # Direct text response
             result_text = response['content']
-        
+
         # Add AI response to history
         session['messages'].append({
             "role": "assistant",
             "content": result_text
         })
-        
+
         # Create TwiML response
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -125,9 +125,9 @@ async def process_speech(request: Request):
     </Gather>
     <Say voice="Polly.Joanna">Thank you for using Call 2 Live. Goodbye!</Say>
 </Response>"""
-        
+
         return Response(content=twiml, media_type="application/xml")
-        
+
     except Exception as e:
         logger.error(f"Error processing speech: {e}")
         return await respond_and_hangup("I'm sorry, I encountered an error. Please try again.")
@@ -136,51 +136,51 @@ async def handle_function_call(response: Dict, session: Dict) -> str:
     """Execute function calls from LLM"""
     function_name = response['function_name']
     function_args = response['function_args']
-    
+
     logger.info(f"Executing function: {function_name} with args: {function_args}")
-    
+
     try:
         if function_name == 'search_places':
             query = function_args.get('query')
             location = function_args.get('location')
-            
+
             # Store location in session
             if location:
                 session['location'] = location
-            
+
             # Search places
             places = maps_service.search_places(query, location)
-            
+
             if not places:
                 return f"I couldn't find any {query} near {location}. Could you try a different search?"
-            
+
             # Format result
             result_text = await llm_service.format_function_result(
                 function_name,
                 {'places': places, 'count': len(places)},
                 session_id=call_sid
             )
-            
+
             # Optionally send SMS with details
             if len(places) > 1:
                 sms_text = sms_service.format_places_sms(places)
                 sms_service.send_sms(session['caller'], sms_text)
                 result_text += " I've also sent the details to your phone via text message."
-            
+
             return result_text
-            
+
         elif function_name == 'send_sms':
             message = function_args.get('message')
             success = sms_service.send_sms(session['caller'], message)
-            
+
             if success:
                 return "I've sent the information to your phone."
             else:
                 return "I had trouble sending the text message."
-        
+
         else:
             return "I'm not sure how to help with that."
-            
+
     except Exception as e:
         logger.error(f"Error executing function: {e}")
         return "I encountered an issue while processing that request."
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     logger.info(f"🌐 Base URL: {settings.base_url}")
     logger.info(f"🔌 Port: {settings.port}")
     logger.info("=" * 50)
-    
+
     uvicorn.run(
         "main:app",
         host=settings.host,

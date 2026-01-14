@@ -1,8 +1,8 @@
-# 📋 Call2Live - Complete Project Summary
+# 📋 Call2Map - Complete Project Summary
 
 ## 🎯 Project Overview
 
-**Call2Live** is a voice-first AI assistant accessible via phone call. Users can call a phone number and have natural conversations with an AI to find nearby places, get information, and receive results via SMS.
+**Call2Map** is a voice-first AI assistant accessible via phone call. Users can call a phone number and have natural conversations with an AI to find nearby places, get information, and receive results via SMS.
 
 **Core Innovation:** Zero-friction AI access through existing phone infrastructure - no app download, no screen required.
 
@@ -65,7 +65,7 @@
 ## 📁 Project Structure
 
 ```
-call2live_complete/
+call2map_complete/
 │
 ├── main.py                    # FastAPI application (core logic)
 ├── config.py                  # Configuration management
@@ -377,14 +377,14 @@ curl http://localhost:8000/health
 
 ## 🏆 Achievements
 
-✅ Working end-to-end system  
-✅ Natural conversation flow  
-✅ Multi-service integration  
-✅ Real-time processing  
-✅ SMS delivery  
-✅ Comprehensive documentation  
-✅ Production-ready architecture  
-✅ Cost-effective solution  
+✅ Working end-to-end system
+✅ Natural conversation flow
+✅ Multi-service integration
+✅ Real-time processing
+✅ SMS delivery
+✅ Comprehensive documentation
+✅ Production-ready architecture
+✅ Cost-effective solution
 
 ---
 
@@ -414,10 +414,10 @@ curl http://localhost:8000/health
 
 ## 📞 Contact & Support
 
-**Project Repository**: [Your GitHub URL]  
-**Documentation**: See docs folder  
-**Issues**: GitHub Issues  
-**Demos**: DEMO_SCRIPT.md  
+**Project Repository**: [Your GitHub URL]
+**Documentation**: See docs folder
+**Issues**: GitHub Issues
+**Demos**: DEMO_SCRIPT.md
 
 ---
 
