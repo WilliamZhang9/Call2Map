@@ -3,7 +3,7 @@
 Call2Map - AI Voice Assistant via Phone Call
 Simplified architecture using Twilio's built-in speech recognition
 """
-from fastapi import FastAPI, Request, Form  # ← Make sure this line is here
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import Response
 import uvicorn
 from config import get_settings
@@ -12,7 +12,7 @@ from typing import Dict
 import asyncio
 from services.llm_service import LLMService
 from services.maps_service import MapsService
-from services.sms_service import sms_service
+from services.sms_service import SMSService  # ← Fixed import
 
 # Setup logging
 logging.basicConfig(
@@ -25,9 +25,9 @@ settings = get_settings()
 app = FastAPI(title="Call2Map")
 
 # Initialize services
-# llm_service = LLMService(settings.openai_api_key)
 llm_service = LLMService(settings.gemini_api_key)
 maps_service = MapsService(settings.google_maps_api_key)
+sms_service = SMSService()
 
 # Store active call sessions
 call_sessions: Dict[str, dict] = {}
@@ -64,8 +64,8 @@ async def handle_incoming_call(request: Request):
     # TwiML with speech recognition
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Say voice="Polly.Joanna">Hello! Welcome to Call 2 Live. I'm your A I assistant. I can help you find restaurants, stores, and other places near you.</Say>
-    <Gather input="speech" timeout="3" speechTimeout="auto" action="{settings.base_url}/voice/process-speech" method="POST">
+    <Say voice="Polly.Joanna">Hello! Welcome to Call 2 Map. I'm your A I assistant. I can help you find restaurants, stores, and other places near you.</Say>
+    <Gather input="speech" timeout="5" speechTimeout="auto" action="{settings.base_url}/voice/process-speech" method="POST">
         <Say voice="Polly.Joanna">How can I help you today?</Say>
     </Gather>
     <Say voice="Polly.Joanna">I didn't hear anything. Please call back if you need assistance. Goodbye!</Say>
@@ -121,10 +121,10 @@ async def process_speech(request: Request):
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Say voice="Polly.Joanna">{result_text}</Say>
-    <Gather input="speech" timeout="3" speechTimeout="auto" action="{settings.base_url}/voice/process-speech" method="POST">
+    <Gather input="speech" timeout="8" speechTimeout="auto" action="{settings.base_url}/voice/process-speech" method="POST">
         <Say voice="Polly.Joanna">Is there anything else I can help you with?</Say>
     </Gather>
-    <Say voice="Polly.Joanna">Thank you for using Call 2 Live. Goodbye!</Say>
+    <Say voice="Polly.Joanna">Thank you for using Call 2 Map. Goodbye!</Say>
 </Response>"""
 
         return Response(content=twiml, media_type="application/xml")
