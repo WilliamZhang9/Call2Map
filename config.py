@@ -1,23 +1,24 @@
 # config.py
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
+from pydantic import SecretStr
 
 class Settings(BaseSettings):
     """Application settings loaded from .env file"""
     
     # Twilio Configuration
-    twilio_account_sid: str
-    twilio_auth_token: str
-    twilio_phone_number: str
+    twilio_account_sid: SecretStr
+    twilio_auth_token: SecretStr
+    twilio_phone_number: SecretStr
     
     # Google Gemini Configuration (changed from OpenAI)
-    gemini_api_key: str
+    gemini_api_key: SecretStr
     
     # Google Maps Configuration
-    google_maps_api_key: str
+    google_maps_api_key: SecretStr
     
     # Deepgram (Optional)
-    deepgram_api_key: str = ""
+    deepgram_api_key: SecretStr = SecretStr("")
     
     # Server Configuration
     port: int = 8000
