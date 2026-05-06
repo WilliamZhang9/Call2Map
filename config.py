@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     # Server Configuration
     port: int = 8000
     host: str = "0.0.0.0"
-    base_url: str = "http://localhost:8000"
+    base_url: str = "http://localhost:8000" # Default for local development, override with BASE_URL env var in production.
     
     model_config = SettingsConfigDict(
         env_file=".env",
